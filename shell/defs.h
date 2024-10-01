@@ -48,4 +48,6 @@
 
 #define EXIT_SHELL 1
 
+#define COMMAND_NAME 0
+
 #endif  // DEFS_H

@@ -68,16 +68,68 @@ static int
 open_redir_fd(char *file, int flags)
 {
 	// Your code here
-    int fd;
-    fd = open(file, flags, S_IWUSR | S_IRUSR);
+	int fd;
+	fd = open(file, flags, S_IWUSR | S_IRUSR);
 
-	if (fd == -1)
-    {
-        perror("Error opening file.");
-        exit(EXIT_FAILURE);
-    }
-    return fd;
+	if (fd == -1) {
+		perror("Error opening file.");
+		exit(EXIT_FAILURE);
+	}
+	return fd;
 }
+
+int
+valid(char *file)
+{
+	return strlen(file) <= 0;
+}
+
+
+void
+redirect_stdin(char *file)
+{
+	if (!valid(file)) {
+		int fd = open_redir_fd(file, O_RDONLY);
+		if (fd != STDIN_FILENO) {
+			if (dup2(fd, STDIN_FILENO) != STDIN_FILENO) {
+				perror("Error duplicating file descriptor");
+				exit(EXIT_FAILURE);
+			}
+			close(fd);
+		}
+	}
+}
+
+void
+redirect_stdout(char *file)
+{
+	if (!valid(file)) {
+		int fd = open_redir_fd(file, O_WRONLY | O_CREAT | O_TRUNC);
+		if (fd != STDOUT_FILENO) {
+			if (dup2(fd, STDOUT_FILENO) != STDOUT_FILENO) {
+				perror("Error duplicating file descriptor");
+				exit(EXIT_FAILURE);
+			}
+			close(fd);
+		}
+	}
+}
+
+void
+redirect_stderr(char *file)
+{
+	if (!valid(file)) {
+		int fd = open_redir_fd(file, O_WRONLY | O_CREAT | O_TRUNC);
+		if (fd != STDERR_FILENO) {
+			if (dup2(fd, STDERR_FILENO) != STDERR_FILENO) {
+				perror("Error duplicating file descriptor");
+				exit(EXIT_FAILURE);
+			}
+			close(fd);
+		}
+	}
+}
+
 
 // executes a command - does not return
 //
@@ -99,13 +151,13 @@ exec_cmd(struct cmd *cmd)
 		// spawns a command
 		// Your code here
 		e = (struct execcmd *) cmd;
-        set_environ_vars(e->eargv, e->eargc);
-		if (e->argv[0] == NULL) {
+		set_environ_vars(e->eargv, e->eargc);
+		if (e->argv[COMMAND_NAME] == NULL) {
 			// No se encontro el comando
 			printf("Command not found\n");
 			exit(EXIT_FAILURE);
 		}
-		execvp(e->argv[0], e->argv);
+		execvp(e->argv[COMMAND_NAME], e->argv);
 		// Si llega aca es porque hubo un error
 		perror("execvp failed");
 		exit(EXIT_FAILURE);
@@ -128,6 +180,10 @@ exec_cmd(struct cmd *cmd)
 		// is greater than zero
 		//
 		// Your code here
+		e = (struct execcmd *) cmd;
+		redirect_stdin(e->in_file);
+		redirect_stdout(e->out_file);
+		redirect_stderr(e->err_file);
 
 		printf("Redirections are not yet implemented\n");
 		_exit(-1);
