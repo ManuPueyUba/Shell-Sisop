@@ -1,4 +1,7 @@
 #include "exec.h"
+#include <stdlib.h>
+#include "defs.h"
+#include "printstatus.h"
 
 // sets "key" with the key part of "arg"
 // and null-terminates it
@@ -87,10 +90,18 @@ exec_cmd(struct cmd *cmd)
 	switch (cmd->type) {
 	case EXEC:
 		// spawns a command
-		//
 		// Your code here
-		printf("Commands are not yet implemented\n");
-		_exit(-1);
+		e = (struct execcmd *) cmd;
+		ser_environ_vars(e->eargv, e->eargc);
+		if (e->argv[0] == NULL) {
+			// No se encontro el comando
+			printf("Command not found\n");
+			exit(EXIT_FAILURE);
+		}
+		execvp(e->argv[0], e->argv);
+		// Si llega aca es porque hubo un error
+		perror("execvp");
+		exit(EXIT_FAILURE);
 		break;
 
 	case BACK: {
