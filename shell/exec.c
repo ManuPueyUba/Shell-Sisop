@@ -92,7 +92,7 @@ exec_cmd(struct cmd *cmd)
 		// spawns a command
 		// Your code here
 		e = (struct execcmd *) cmd;
-		ser_environ_vars(e->eargv, e->eargc);
+        set_environ_vars()_environ_vars(e->eargv, e->eargc);
 		if (e->argv[0] == NULL) {
 			// No se encontro el comando
 			printf("Command not found\n");
