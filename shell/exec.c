@@ -68,8 +68,15 @@ static int
 open_redir_fd(char *file, int flags)
 {
 	// Your code here
+    int fd;
+    fd = open(file, flags, S_IWUSR | S_IRUSR);
 
-	return -1;
+	if (fd == -1)
+    {
+        perror("Error opening file.");
+        exit(EXIT_FAILURE);
+    }
+    return fd;
 }
 
 // executes a command - does not return
@@ -121,6 +128,7 @@ exec_cmd(struct cmd *cmd)
 		// is greater than zero
 		//
 		// Your code here
+
 		printf("Redirections are not yet implemented\n");
 		_exit(-1);
 		break;
