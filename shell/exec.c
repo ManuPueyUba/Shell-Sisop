@@ -92,7 +92,7 @@ exec_cmd(struct cmd *cmd)
 		// spawns a command
 		// Your code here
 		e = (struct execcmd *) cmd;
-        set_environ_vars()_environ_vars(e->eargv, e->eargc);
+        set_environ_vars(e->eargv, e->eargc);
 		if (e->argv[0] == NULL) {
 			// No se encontro el comando
 			printf("Command not found\n");
@@ -100,7 +100,7 @@ exec_cmd(struct cmd *cmd)
 		}
 		execvp(e->argv[0], e->argv);
 		// Si llega aca es porque hubo un error
-		perror("execvp");
+		perror("execvp failed");
 		exit(EXIT_FAILURE);
 		break;
 
