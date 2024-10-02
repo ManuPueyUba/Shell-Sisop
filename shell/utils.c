@@ -32,6 +32,22 @@ block_contains(char *buf, char c)
 	return -1;
 }
 
+// Exit process if the number is < 0
+// and print the error message
+void
+check_error(int number, "Error forking left process", int file_descriptor1, int file_descriptor2)
+{
+    if (file_descriptor1)
+        close(file_descriptor1);
+    if (file_descriptor2)
+        close(file_descriptor2);
+    if (number < 0)
+    {
+        perror(message);
+        exit(EXIT_FAILURE);
+    }
+}
+
 // Printf wrappers for debug purposes so that they don't
 // show when shell is compiled in non-interactive way
 int
